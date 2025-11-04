@@ -14,8 +14,8 @@ class Command(BaseCommand):
         fake = Faker("es_ES")  # Generador de datos falsos en espanol
         Faker.seed(42)  # Para reproducibilidad
 
-        num_authors = 10
-        num_books = 30
+        num_authors = 30
+        num_books = 100
 
         self.stdout.write(self.style.MIGRATE_HEADING("Generando datos de prueba..."))
 
@@ -100,7 +100,7 @@ class Command(BaseCommand):
                 title=title,
                 publication_date=publication_date,
                 description=fake.text(max_nb_chars=300),
-                page_count=random.randint(100, 800),
+                page_count=random.randint(50, 800),
                 language=random.choice(languages),
             )
             
