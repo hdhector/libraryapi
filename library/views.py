@@ -73,7 +73,7 @@ class AuthorViewSet(viewsets.ModelViewSet):
     filter_backends = [DjangoFilterBackend, SearchFilter, OrderingFilter]
     filterset_fields = ['nationality']
     search_fields = ['first_name', 'last_name', 'nationality', 'biography']
-    ordering_fields = ['last_name', 'first_name', 'created_at', 'updated_at']
+    ordering_fields = ['id', 'last_name', 'first_name', 'created_at', 'updated_at']
     ordering = ['first_name', 'last_name']
     
     def get_serializer_class(self):
@@ -193,7 +193,7 @@ class BookViewSet(viewsets.ModelViewSet):
     filter_backends = [DjangoFilterBackend, SearchFilter, OrderingFilter]
     filterset_fields = ['language', 'authors__id']
     search_fields = ['title', 'description']
-    ordering_fields = ['title', 'publication_date', 'page_count', 'created_at']
+    ordering_fields = ['id', 'title', 'publication_date', 'page_count', 'created_at']
     ordering = ['title']
     
     def get_serializer_class(self):

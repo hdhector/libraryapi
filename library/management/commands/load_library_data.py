@@ -1,5 +1,4 @@
 from django.core.management.base import BaseCommand
-from django.db.models import Count
 from library.models import Author, Book
 from faker import Faker
 import random
@@ -39,6 +38,11 @@ class Command(BaseCommand):
         
         self.stdout.write(self.style.SUCCESS(f"✓ {len(authors)} autores creados."))
 
+        # Validar que hay autores antes de crear libros
+        if not authors:
+            self.stdout.write(self.style.ERROR("Error: No se crearon autores. No se pueden crear libros sin autores."))
+            return
+
         # --- Crear libros ---
         languages = [Book.Language.SPANISH, Book.Language.ENGLISH, 
                     Book.Language.FRENCH, Book.Language.GERMAN, 
@@ -59,7 +63,7 @@ class Command(BaseCommand):
 
         books = []
         for _ in range(num_books):
-            # Seleccionar 1-3 autores aleatorios para cada libro
+            # Seleccionar 1-3 autores aleatorios para cada libro (siempre al menos 1)
             num_book_authors = random.randint(1, min(3, len(authors)))
             book_authors = random.sample(authors, num_book_authors)
             
@@ -115,8 +119,6 @@ class Command(BaseCommand):
         self.stdout.write(self.style.SUCCESS("Resumen de datos generados:"))
         self.stdout.write(self.style.SUCCESS(f"  Autores: {Author.objects.count()}"))
         self.stdout.write(self.style.SUCCESS(f"  Libros: {Book.objects.count()}"))
-        books_without_authors = Book.objects.annotate(author_count=Count('authors')).filter(author_count=0).count()
-        self.stdout.write(self.style.SUCCESS(f"  Libros sin autores: {books_without_authors}"))
         self.stdout.write(self.style.SUCCESS("="*50))
         self.stdout.write(self.style.SUCCESS("\nDatos de prueba cargados exitosamente!"))
 
