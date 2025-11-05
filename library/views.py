@@ -1,9 +1,10 @@
-from rest_framework import viewsets, filters
+from rest_framework import viewsets
 from rest_framework.decorators import action
 from rest_framework.response import Response
 from rest_framework.permissions import IsAuthenticated
+from rest_framework.filters import SearchFilter, OrderingFilter
 from drf_spectacular.utils import extend_schema, extend_schema_view
-import django_filters
+from django_filters.rest_framework import DjangoFilterBackend
 from django.db.models import (
     Count, Avg, Q, F, Max, Min, Sum,
     Case, When, IntegerField, CharField, Value
@@ -19,24 +20,6 @@ from .serializers import (
 )
 
 
-# Filtros simples
-class AuthorFilter(django_filters.FilterSet):
-    """Filtros básicos para autores."""
-    nationality = django_filters.CharFilter(lookup_expr='icontains')
-    
-    class Meta:
-        model = Author
-        fields = ['nationality']
-
-
-class BookFilter(django_filters.FilterSet):
-    """Filtros básicos para libros."""
-    language = django_filters.ChoiceFilter(choices=Book.Language.choices)
-    author = django_filters.NumberFilter(field_name='authors__id')
-    
-    class Meta:
-        model = Book
-        fields = ['language', 'author']
 
 
 @extend_schema_view(
@@ -74,7 +57,7 @@ class BookFilter(django_filters.FilterSet):
         summary='Eliminar autor',
         description='Elimina un autor del sistema. No retorna contenido en el cuerpo de la respuesta.',
         tags=['Autores'],
-        responses={200: {'description': 'Autor eliminado exitosamente'}},
+        responses={204: {'description': 'Autor eliminado exitosamente'}},
     ),
 )
 
@@ -87,7 +70,8 @@ class AuthorViewSet(viewsets.ModelViewSet):
     queryset = Author.objects.all()
     serializer_class = AuthorSerializer
     permission_classes = [IsAuthenticated]
-    filterset_class = AuthorFilter
+    filter_backends = [DjangoFilterBackend, SearchFilter, OrderingFilter]
+    filterset_fields = ['nationality']
     search_fields = ['first_name', 'last_name', 'nationality', 'biography']
     ordering_fields = ['last_name', 'first_name', 'created_at', 'updated_at']
     ordering = ['first_name', 'last_name']
@@ -194,7 +178,7 @@ class AuthorViewSet(viewsets.ModelViewSet):
         summary='Eliminar libro',
         description='Elimina un libro del sistema. No retorna contenido en el cuerpo de la respuesta.',
         tags=['Libros'],
-        responses={200: {'description': 'Libro eliminado exitosamente'}},
+        responses={204: {'description': 'Libro eliminado exitosamente'}},
     ),
 )
 class BookViewSet(viewsets.ModelViewSet):
@@ -206,7 +190,8 @@ class BookViewSet(viewsets.ModelViewSet):
     queryset = Book.objects.all()
     serializer_class = BookSerializer
     permission_classes = [IsAuthenticated]
-    filterset_class = BookFilter
+    filter_backends = [DjangoFilterBackend, SearchFilter, OrderingFilter]
+    filterset_fields = ['language', 'authors__id']
     search_fields = ['title', 'description']
     ordering_fields = ['title', 'publication_date', 'page_count', 'created_at']
     ordering = ['title']

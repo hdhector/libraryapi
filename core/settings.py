@@ -171,11 +171,19 @@ SPECTACULAR_SETTINGS = {
     'TITLE': 'Library API',
     'DESCRIPTION': 'API REST para gestión de biblioteca con libros y autores',
     'VERSION': '1.0.0',
-    'SERVE_INCLUDE_SCHEMA': False,
-    'COMPONENT_SPLIT_REQUEST': True,
+    'SERVE_INCLUDE_SCHEMA': False, # No sirve el schema en la documentación
+    'COMPONENT_SPLIT_REQUEST': True, # Divide la documentación por componente
     'SCHEMA_PATH_PREFIX': '/api/',
     'AUTHENTICATION_WHITELIST': [
         'rest_framework_simplejwt.authentication.JWTAuthentication',
         'rest_framework.authentication.BasicAuthentication',
     ],
+    'SECURITY_DEFINITIONS': {
+        'Bearer': {
+            'type': 'http',
+            'scheme': 'bearer',
+            'bearerFormat': 'JWT',
+            'description': 'Token JWT obtenido mediante /api/token/'
+        }
+    },
 }
