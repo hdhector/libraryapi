@@ -2,6 +2,7 @@ from django.db import models
 
 
 class Author(models.Model):
+    """Modelo de autor con información básica."""
     first_name = models.CharField(max_length=100)
     last_name = models.CharField(max_length=100)
     birth_date = models.DateField(null=True, blank=True)
@@ -28,6 +29,7 @@ class Author(models.Model):
 
 
 class Book(models.Model):
+    """Modelo de libro con relación many-to-many a autores."""
     class Language(models.TextChoices):
         SPANISH = 'es', 'Spanish'
         ENGLISH = 'en', 'English'
@@ -63,4 +65,5 @@ class Book(models.Model):
         return self.title
 
     def get_authors_display(self):
+        """Retorna los nombres de los autores separados por coma."""
         return ', '.join([author.full_name for author in self.authors.all()])

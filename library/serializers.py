@@ -30,8 +30,8 @@ class AuthorDetailSerializer(AuthorSerializer):
         fields = AuthorSerializer.Meta.fields + ['books']
     
     def get_books(self, obj):
-        """Retorna información básica de los libros del autor."""
-        books = obj.books.all()[:10]  # Limitar a 10 libros
+        """Lista todos los libros del autor."""
+        books = obj.books.all()
         return [
             {
                 'id': book.id,

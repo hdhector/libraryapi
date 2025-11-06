@@ -37,7 +37,7 @@ from .serializers import (
     ),
     retrieve=extend_schema(
         summary='Obtener autor',
-        description='Retorna los detalles completos de un autor específico incluyendo información de sus libros (hasta 10 libros con id, título, fecha de publicación e idioma).',
+        description='Retorna los detalles completos de un autor específico incluyendo información de todos sus libros (id, título, fecha de publicación e idioma).',
         tags=['Autores'],
         responses={200: {'description': 'Detalles del autor con sus libros'}},
     ),
@@ -71,7 +71,7 @@ class AuthorViewSet(viewsets.ModelViewSet):
     serializer_class = AuthorSerializer
     permission_classes = [IsAuthenticated]
     filter_backends = [DjangoFilterBackend, SearchFilter, OrderingFilter]
-    filterset_fields = ['nationality']
+    filterset_fields = ['nationality', 'birth_date']
     search_fields = ['first_name', 'last_name', 'nationality', 'biography']
     ordering_fields = ['id', 'last_name', 'first_name', 'created_at', 'updated_at']
     ordering = ['first_name', 'last_name']
@@ -191,7 +191,7 @@ class BookViewSet(viewsets.ModelViewSet):
     serializer_class = BookSerializer
     permission_classes = [IsAuthenticated]
     filter_backends = [DjangoFilterBackend, SearchFilter, OrderingFilter]
-    filterset_fields = ['language', 'authors__id']
+    filterset_fields = ['language', 'authors__id', 'publication_date']
     search_fields = ['title', 'description']
     ordering_fields = ['id', 'title', 'publication_date', 'page_count', 'created_at']
     ordering = ['title']
@@ -213,6 +213,7 @@ class BookViewSet(viewsets.ModelViewSet):
         """
         Endpoint de estadísticas globales de libros.
         Usa múltiples agregaciones y consultas complejas.
+        Incluye: por idioma, por año, por rango de páginas y autores más prolíficos.
         """
         queryset = self.get_queryset()
         
@@ -280,6 +281,7 @@ class BookViewSet(viewsets.ModelViewSet):
         """
         Análisis de tendencias.
         Identifica patrones temporales y temáticos.
+        Incluye: idiomas por década, crecimiento por década y autores emergentes (libros en los últimos 10 años).
         """
         queryset = self.get_queryset()
         
